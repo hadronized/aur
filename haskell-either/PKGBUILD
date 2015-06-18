@@ -19,7 +19,7 @@ depends=('haskell-bifunctors>=4' 'haskell-bifunctors<6' \
          'haskell-mtl>=2' 'haskell-mtl<2.3' \
          'haskell-profunctors>=4' 'haskell-profunctors<6' \
          'haskell-semigroupoids>=4' 'haskell-semigroupoids<6' \
-         'haskell-semigroups>= 0.8.3.1' 'haskell-semigroups<1' \
+         'haskell-semigroups>=0.8.3.1' 'haskell-semigroups<1' \
          'haskell-transformers>=0.2' 'haskell-transformers<0.5' \
          'haskell-transformers-base>=0.4' 'haskell-transformers-base<0.5')
 options=('strip')
