@@ -1,0 +1,39 @@
+# Maintainer:  Dimitri Sabadie <dimitri.sabadie@gmail.com>
+
+_hkgname=
+pkgname=haskell-$_hkgname
+pkgver=
+pkgrel=1
+pkgdesc=""
+url="http://hackage.haskell.org/package/$_hkgname"
+license=('')
+arch=('any')
+makedepends=('ghc<7.11')
+depends=('')
+options=('strip')
+source=(http://hackage.haskell.org/package/$_hkgname-$pkgver/$_hkgname-$pkgver.tar.gz)
+install=$pkgname.install
+sha256sums=('')
+build() {
+    cd $srcdir/$_hkgname-$pkgver
+    runhaskell Setup configure -O ${PKGBUILD_HASKELL_ENABLE_PROFILING:+-p } \
+      --enable-split-objs --enable-shared \
+      --prefix=/usr --docdir=/usr/share/doc/$pkgname \
+      --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build
+    runhaskell Setup haddock
+    runhaskell Setup register   --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+package() {
+    cd $srcdir/$_hkgname-$pkgver
+
+    install -D -m744 register.sh $pkgdir/usr/share/$pkgname/register.sh
+    install    -m744 unregister.sh $pkgdir/usr/share/$pkgname/unregister.sh
+
+    runhaskell Setup copy --destdir=$pkgdir
+
+    install -D -m644 LICENSE $pkgdir/usr/share/licenses/$pkgname/LICENSE
+    rm $pkgdir/usr/share/doc/$pkgname/LICENSE
+}

@@ -1,0 +1,51 @@
+# Maintainer:  Dimitri Sabadie <dimitri.sabadie@gmail.com>
+# Contributor: André van Delden <andre.van.delden@uni-bremen.de>
+
+_hkgname=either
+pkgname=haskell-$_hkgname
+pkgver=4.4.1
+pkgrel=1
+pkgdesc="An either monad transformer"
+url="http://hackage.haskell.org/package/$_hkgname"
+license=('custom:BSD3')
+arch=('i686' 'x86_64')
+makedepends=('ghc<7.11')
+depends=('haskell-bifunctors>=4' 'haskell-bifunctors<6' \
+         'haskell-exceptions>=0.5' 'haskell-exceptions<0.9' \
+         'haskell-free>=4.9' 'haskell-free<5' \
+         'haskell-mmorph>=1' 'haskell-mmorph<1.1'
+         'haskell-monad-control>=0.3.2' 'haskell-monad-control<1.1' \
+         'haskell-monadrandom>=0.1' 'haskell-monadrandom<0.5' \
+         'haskell-mtl>=2' 'haskell-mtl<2.3' \
+         'haskell-profunctors>=4' 'haskell-profunctors<6' \
+         'haskell-semigroupoids>=4' 'haskell-semigroupoids<6' \
+         'haskell-semigroups>=0.8.3.1' 'haskell-semigroups<1' \
+         'haskell-transformers>=0.2' 'haskell-transformers<0.5' \
+         'haskell-transformers-base>=0.4' 'haskell-transformers-base<0.5')
+options=('strip')
+source=(http://hackage.haskell.org/package/$_hkgname-$pkgver/$_hkgname-$pkgver.tar.gz)
+install=$pkgname.install
+sha256sums=('91e57debc09bcaa7d4b884902ea6d3201ca3fec77625a059edd84bcaeb5909cb')
+build() {
+    cd $srcdir/$_hkgname-$pkgver
+    runhaskell Setup configure -O ${PKGBUILD_HASKELL_ENABLE_PROFILING:+-p } \
+      --enable-split-objs --enable-shared \
+      --prefix=/usr --docdir=/usr/share/doc/$pkgname \
+      --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build
+    runhaskell Setup haddock
+    runhaskell Setup register   --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+package() {
+    cd $srcdir/$_hkgname-$pkgver
+
+    install -D -m744 register.sh $pkgdir/usr/share/$pkgname/register.sh
+    install    -m744 unregister.sh $pkgdir/usr/share/$pkgname/unregister.sh
+
+    runhaskell Setup copy --destdir=$pkgdir
+
+    install -D -m644 LICENSE $pkgdir/usr/share/licenses/$pkgname/LICENSE
+    rm $pkgdir/usr/share/doc/$pkgname/LICENSE
+}

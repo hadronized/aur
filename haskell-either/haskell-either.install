@@ -1,0 +1,20 @@
+pkgname=haskell-either
+
+post_install() {
+  /usr/share/$pkgname/register.sh
+}
+
+pre_upgrade() {
+  /usr/share/$pkgname/unregister.sh
+}
+
+post_upgrade() {
+  /usr/share/$pkgname/register.sh
+}
+
+pre_remove() {
+  /usr/share/$pkgname/unregister.sh
+}
+
+post_remove() {
+}
